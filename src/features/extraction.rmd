@@ -1,0 +1,30 @@
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+library(data.table)
+library(dplyr)                                                  # Load dplyr package
+library(plyr)                                                   # Load plyr package
+library(readr)
+```
+
+
+
+
+
+```{r}
+temp = list.files(pattern="*.csv")
+myfiles = lapply(temp, read.delim)
+
+data_all <- temp %>% 
+  lapply(read_csv) %>%                                            # Store all files in list
+  bind_rows  
+data_martin_luther_king<-data_all[(data_all$location_name=="Martin Luther King Jr Memorial"),]
+data_martin_luther_king<-data_martin_luther_king[(data_martin_luther_king$street_address=="1964 Independence Ave SW"),]
+data_martin_luther_king<-subset(data_martin_luther_king, select = c(date_range_start,visitor_home_cbgs))
+write.csv(data_martin_luther_king,"cbg_data_mlk.csv")
+```
+
+
