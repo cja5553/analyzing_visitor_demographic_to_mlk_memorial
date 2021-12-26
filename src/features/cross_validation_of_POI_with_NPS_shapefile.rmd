@@ -1,0 +1,50 @@
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+require(sp)  
+require(rgdal)
+require(maps)
+args = commandArgs(trailingOnly=TRUE)
+library(data.table)
+#install.packages('R.utils')
+```
+
+
+
+
+```{r}
+org_data = fread("DC.csv.gz")
+#org_data<-read.csv("core_poi-part1.csv")
+org_data<-subset(org_data,!is.na(org_data$sg_c__latitude))
+org_data<-subset(org_data,!is.na(org_data$sg_c__longitude))
+
+
+```
+
+```{r}
+org_data$row_number<-rownames(org_data)
+coordinates(org_data)<-c("sg_c__longitude","sg_c__latitude")
+poly <- readOGR("NPS_-_Land_Resources_Division_Boundary_and_Tract_Data_Service","NPS_-_Land_Resources_Division_Boundary_and_Tract_Data_Service")
+```
+
+
+```{r}
+poly_wgs84 <- spTransform(poly, CRS("+proj=longlat +datum=WGS84"))
+proj4string(org_data)<-proj4string(poly_wgs84)
+```
+
+
+```{r}
+plot(poly_wgs84)
+plot(org_data, add=TRUE, col="red")
+poly_ID<-over(org_data, poly_wgs84)
+poly_ID<-poly_ID[!is.na(poly_ID$OBJECTID), ]
+poly_ID$row_number<-rownames(poly_ID)
+newData <- merge(poly_ID, org_data, by.x="row_number", by.y="row_number", all.x=T)
+write.csv(newData,"POI.csv")
+```
+
+
