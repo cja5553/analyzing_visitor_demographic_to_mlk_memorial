@@ -1,0 +1,34 @@
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+require(sp)  
+require(rgdal)
+require(maps)
+args = commandArgs(trailingOnly=TRUE)
+library(data.table)
+library(bit64)
+options(scipen = 999)
+#install.packages('R.utils')
+```
+
+
+
+
+```{r}
+data = read.csv("ACS.csv")
+data$percent_nonwhite<-(data$Total_Population-data$white)/(data$Total_Population)
+data$percent_aa<-(data$black)/(data$Total_Population)
+data$percent_hispanic<-(data$hispanic)/(data$Total_Population)
+data$percent_asian<-(data$asian)/(data$Total_Population)
+data$percent_indian<-(data$native)/data$Total_Population
+
+```
+
+
+```{r}
+write.csv(data,"updated_acs.csv")
+```
+
